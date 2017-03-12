@@ -6,19 +6,24 @@ var first,
     image1,
     image2,
     second,
+    name,
+    gender,
     score = [],
     s = 0,
     ms = 0,
     i = 0,
+    j = 0,
     myVar,
     play = false;
 function start() {
+    name = document.getElementById("textboxn").value;
+    gender = document.getElementById("textboxg").value;
+
     image1 = document.getElementById("image1");
     image2 = document.getElementById("image2");
     first = document.getElementById("first");
     second = document.getElementById("second");
     firstmg = document.getElementById("firstmg");
-    Code = document.getElementById("textbox").value;
     firstmg.innerHTML = "";
     var para = document.createElement("p");
     var para1 = document.createElement("p");
@@ -38,7 +43,7 @@ function start() {
     firstmg.appendChild(button);
     shuffle(order);
     shuffle(lorr);
-    
+
 }
 
 function begin() {
@@ -86,7 +91,7 @@ stopwatch = setInterval(function () {
 }, 1);
 
 function displayPicture(order, lorr) {
-    
+
     if (lorr == 1) {
         image2.style.visibility = "visible";
     } else if (lorr == 0) {
@@ -99,24 +104,23 @@ function displayPicture(order, lorr) {
         e = e || window.event;
         var charCode = (typeof e.which == "number") ? e.which : e.keyCode;
         if (charCode == 32) {
-             toggle();
+            toggle();
             clearTimeout(myVar);
             question(order);
-        } 
+        }
     };
-    
+
 }
 
 function question(order) {
     image2.style.visibility = "hidden";
     image1.style.visibility = "hidden";
     second.style.visibility = "hidden";
-    var aj_ms = (s * 1000) + (ms * 10);
     i++;
     switch (order) {
         case 1:
             quest("Line Between Two Cars", "The Tree on the right side", "Window on the Red Card", 1);
-            
+
             break;
         case 2:
             quest("Group of people", "Red Flag", "Small circle on the right", 2);
@@ -140,7 +144,7 @@ function question(order) {
             quest("The light pole", "The ship on the right", "The disability sign on the left", 1);
             break;
         case 9:
-            quest("The individuals on the street", "The tower crane on the right", "The statue in the middle",2);
+            quest("The individuals on the street", "The tower crane on the right", "The statue in the middle", 2);
             break;
         case 10:
             quest("The far tower crane on the left", "The individuals on the bridge", "The red boat", 1);
@@ -152,7 +156,7 @@ function question(order) {
             quest("The car in the middle", "The column on the left", "The column on the right", 2);
             break;
         case 13:
-            quest("The building in the middle", "The trees on the left", "The small castle on the right",3);
+            quest("The building in the middle", "The trees on the left", "The small castle on the right", 3);
             break;
         case 14:
             quest("The stop sign on the left", "The individuals crossing the street", "The girl on the screen", 3);
@@ -163,7 +167,7 @@ function question(order) {
         case 16:
             quest("The light pole", "The building that is obscured on the right", "The individuals on the street", 2);
             break;
-            
+
     }
 }
 
@@ -178,14 +182,23 @@ function quest(str1, str2, str3, correct) {
     button.classList = "btn btn-warning";
     button.value = "Next";
     first.appendChild(para);
-    first.appendChild(makeOptions(str1,str2,str3));
+    first.appendChild(makeOptions(str1, str2, str3));
     first.appendChild(br);
     first.appendChild(button);
     button.addEventListener('click', function () {
         var selected = document.getElementById("slec").selectedIndex;
         if ((selected + 1) == correct) {
+            if (s >= 60) {
+                score[j] = {order: order, time: 99999};
+            } else {
+                score[j] = {order: order, time: (s * 1000) + (ms * 10)};
+            }
+            j++;
+
             begin();
         } else if ((selected + 1) != correct) {
+            score[j] = {order: order, time: 99999};
+            j++;
             begin();
         }
     });
@@ -241,10 +254,25 @@ function Finale() {
     para.innerHTML = "<h1>Thank you for participating</h1>The main purpose of the study is to study the interaction between personality, attention and brain asymmetry. Although, there are various studies that link brain to attention, there are only few studies that investigate the relationship of Personality trait such as extraversion with attention.<br/><br/>Based on previous studies, we hypothesize that extraverts would have better change detection performance than introverts. While, images that are displayed on the left visual field would predict increased change detection performance.<br/><br/> If you have any questions, or conserns, please feel free to contact the researcher at mrfirete@my.yorku.ca"
     button.classList = "btn btn-warning";
     button.value = "Done";
+    var link = "http://localhost/index.php?name=" + name + "&gender=" + gender + "&";
+    for (var z = 0; z < 16; z++) {
+        link += "s" + z + "=" + score[z].time + "&";
+    }
+    closeOnLoad(link);
     button.addEventListener('click', function () {
         location.href = 'http://surveymonkey.com'
     });
     first.appendChild(para);
     first.appendChild(button);
+}
+function closeOnLoad(myLink) {
+    var newWindow = window.open(myLink, "connectWindow", "width=600,height=400,scrollbars=yes");
+    setTimeout(
+        function () {
+            newWindow.close();
+        },
+        10000
+    );
+    return false;
 }
 
